@@ -8,13 +8,13 @@ from matplotlib import pyplot as plt
 import argparse
 
 
-# First sample true action-values then use that as mean to gaussian distribution
 class Bandits:
     def __init__(self, k=10):
         self.k = k
         self.reset_q_true()
 
     def reset_q_true(self):
+        """Reset the true action-values."""
         self.q_true = np.random.normal(size=10)
 
     def take_action(self, a):
@@ -32,7 +32,7 @@ class Bandits:
         """Run the k-armed bandits problem."""
         rewards = np.zeros(steps)
         rng = np.random.default_rng()
-                
+
         for cur_run in range(num_runs):
             if cur_run > 0:
                 self.reset_q_true()
@@ -59,9 +59,11 @@ class Bandits:
 
                 # Save the reward for plotting later
                 rewards[i] += (1/(cur_run + 1)) * (reward - rewards[i])
+
                 # Update the q(a) value (action-value estimate)
                 a_counts[action] += 1
                 q_vals[action] +=  (1/a_counts[action]) * (reward - q_vals[action])
+
         # Return the averaged rewards
         return rewards
     
@@ -72,12 +74,11 @@ def main(args):
     for e in args.epsilon:
         print("Running epsilon", e)
         rewards = bandits.run(e, args.steps, args.num_runs)2
-
         plt.plot(rewards)
+
     plt.ylabel("Average reward")
     plt.xlabel("Steps")
-    plt.legend([str(e) for e in args.epsilon])
-    
+    plt.legend([str(e) for e in args.epsilon])    
     plt.show()
 
 if __name__ == "__main__":
